@@ -54,8 +54,8 @@ export default function AnalyticsPage() {
             </p>
           </Card>
           <Card color="pink">
-            <p className="text-sm font-bold text-white/80">Total Pengeluaran</p>
-            <p className="text-xl font-extrabold text-white">
+            <p className="text-sm font-bold opacity-70">Total Pengeluaran</p>
+            <p className="text-xl font-extrabold ">
               {formatRupiah(summary.totalExpense)}
             </p>
           </Card>

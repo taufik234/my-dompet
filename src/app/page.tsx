@@ -28,9 +28,9 @@ export default function HomePage() {
   // Sudah login -> tampilkan Dashboard
   if (isSignedIn) {
     return (
-      <div className="flex min-h-screen bg-nb-bg">
+      <div className="flex min-h-screen flex-col bg-nb-bg lg:flex-row">
         <Navbar />
-        <main className="flex-1 overflow-y-auto px-4 py-8 lg:px-8">
+        <main className="flex-1 overflow-y-auto px-4 py-8 pb-20 lg:pb-8 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <DashboardContent />
           </div>
