@@ -1,26 +1,135 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ==============================
+   NEOBRUTALISM THEME CONFIGURATION
+   Tailwind CSS v4 - CSS-first config
+   ============================== */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* --- Warna khas Neobrutalism --- */
+  --color-nb-yellow: #FFE156;
+  --color-nb-pink: #FF6B9D;
+  --color-nb-cyan: #00D9FF;
+  --color-nb-green: #7CFF6B;
+  --color-nb-orange: #FFA63E;
+  --color-nb-purple: #C77DFF;
+  --color-nb-bg: #FFFBEB;
+  --color-nb-card: #FFFFFF;
+  --color-nb-dark: #1A1A2E;
+  --color-nb-gray: #F5F5F5;
+
+  /* --- Font --- */
+  --font-sans: "Space Grotesk", sans-serif;
+
+  /* --- Box Shadow khas Neobrutalism --- */
+  --shadow-nb: 4px 4px 0px 0px #000000;
+  --shadow-nb-lg: 6px 6px 0px 0px #000000;
+  --shadow-nb-sm: 2px 2px 0px 0px #000000;
+  --shadow-nb-none: 0px 0px 0px 0px #000000;
+
+  /* --- Border Radius --- */
+  --radius-nb: 12px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ==============================
+   BASE STYLES
+   ============================== */
+
+* {
+  border-color: #000000;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-nb-bg);
+  color: var(--color-nb-dark);
+  font-family: var(--font-sans);
+}
+
+/* ==============================
+   NEOBRUTALISM UTILITY CLASSES
+   ============================== */
+
+/* Kartu dasar dengan border tebal dan shadow keras */
+.nb-card {
+  border: 3px solid #000000;
+  border-radius: var(--radius-nb);
+  box-shadow: var(--shadow-nb-lg);
+  background-color: var(--color-nb-card);
+  transition: all 0.15s ease-in-out;
+}
+
+/* Tombol interaktif dengan efek tekan mekanis */
+.nb-btn {
+  border: 3px solid #000000;
+  border-radius: var(--radius-nb);
+  box-shadow: var(--shadow-nb);
+  font-weight: 700;
+  padding: 0.625rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.nb-btn:hover {
+  box-shadow: var(--shadow-nb-sm);
+  transform: translate(2px, 2px);
+}
+
+.nb-btn:active {
+  box-shadow: var(--shadow-nb-none);
+  transform: translate(4px, 4px);
+}
+
+/* Input field dengan border tebal */
+.nb-input {
+  border: 3px solid #000000;
+  border-radius: var(--radius-nb);
+  padding: 0.625rem 1rem;
+  font-weight: 500;
+  background-color: #FFFFFF;
+  transition: all 0.15s ease-in-out;
+  width: 100%;
+}
+
+.nb-input:focus {
+  outline: none;
+  box-shadow: var(--shadow-nb);
+}
+
+/* Badge / label kecil */
+.nb-badge {
+  border: 2px solid #000000;
+  border-radius: 999px;
+  padding: 0.125rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Select dropdown */
+.nb-select {
+  border: 3px solid #000000;
+  border-radius: var(--radius-nb);
+  padding: 0.625rem 1rem;
+  font-weight: 500;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+  width: 100%;
+  transition: all 0.15s ease-in-out;
+}
+
+.nb-select:focus {
+  outline: none;
+  box-shadow: var(--shadow-nb);
 }

@@ -1,65 +1,118 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { SignIn, useAuth } from "@clerk/nextjs";
+import { Navbar } from "@/components/Navbar";
+import { DashboardContent } from "@/components/DashboardContent";
+import { Wallet, TrendingUp, PieChart, Shield } from "lucide-react";
+
+/**
+ * Root page - menampilkan:
+ * - Landing page + SignIn form jika belum login
+ * - Dashboard jika sudah login
+ */
+export default function HomePage() {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  // Loading state
+  if (!isLoaded) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-nb-bg">
+        <div className="nb-card bg-nb-yellow p-8 text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-black border-t-transparent" />
+          <p className="text-lg font-bold">Memuat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Sudah login -> tampilkan Dashboard
+  if (isSignedIn) {
+    return (
+      <div className="flex min-h-screen bg-nb-bg">
+        <Navbar />
+        <main className="flex-1 overflow-y-auto px-4 py-8 lg:px-8">
+          <div className="mx-auto max-w-6xl">
+            <DashboardContent />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Belum login -> tampilkan Landing Page + Sign In
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-nb-bg">
+      {/* Navbar */}
+      <nav className="border-b-4 border-black bg-nb-yellow px-4 py-3">
+        <div className="mx-auto flex max-w-7xl items-center gap-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border-3 border-black bg-white shadow-nb-sm">
+            <Wallet className="h-5 w-5" />
+          </div>
+          <span className="text-xl font-extrabold tracking-tight">DompetKu</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="mx-auto max-w-7xl px-4 py-16">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          {/* Left: Hero Text */}
+          <div className="flex flex-col gap-6">
+            <div className="nb-card inline-flex w-fit items-center gap-2 bg-nb-cyan px-4 py-2">
+              <Shield className="h-4 w-4" />
+              <span className="text-sm font-bold">Aman & Real-time</span>
+            </div>
+
+            <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+              Kelola Uangmu
+              <br />
+              <span className="bg-nb-yellow px-2">Dengan Mudah!</span>
+            </h1>
+
+            <p className="max-w-md text-lg opacity-70">
+              DompetKu adalah aplikasi catatan keuangan pribadi yang membantumu
+              melacak pemasukan, pengeluaran, dan mencapai tujuan finansialmu.
+            </p>
+
+            {/* Feature Highlights */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <div className="nb-card flex h-10 w-10 items-center justify-center bg-nb-green p-0">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+                <span className="font-bold">Pantau saldo secara real-time</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="nb-card flex h-10 w-10 items-center justify-center bg-nb-pink p-0">
+                  <PieChart className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-bold">
+                  Lihat pengeluaran per kategori dengan grafik
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Sign In Form */}
+          <div className="flex justify-center">
+            <div className="nb-card bg-white p-8">
+              <h2 className="mb-6 text-center text-2xl font-extrabold">
+                Masuk Sekarang
+              </h2>
+              <SignIn
+                routing="hash"
+                appearance={{
+                  elements: {
+                    rootBox: "w-full",
+                    card: "shadow-none border-none",
+                    formButtonPrimary:
+                      "nb-btn bg-nb-yellow text-nb-dark border-3 border-black",
+                  },
+                }}
+              />
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
