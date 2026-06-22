@@ -133,3 +133,134 @@ body {
   outline: none;
   box-shadow: var(--shadow-nb);
 }
+
+/* ==============================
+   ANIMATIONS
+   ============================== */
+
+@keyframes nb-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes nb-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes nb-fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes nb-slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes nb-pop-in {
+  0% { opacity: 0; transform: scale(0.8); }
+  70% { transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes nb-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes nb-progress-stripe {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+
+@keyframes nb-pulse-glow {
+  0%, 100% { box-shadow: var(--shadow-nb-lg), 0 0 0 0 rgba(255, 225, 86, 0); }
+  50% { box-shadow: var(--shadow-nb-lg), 0 0 20px 4px rgba(255, 225, 86, 0.3); }
+}
+
+@keyframes nb-bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Animation utility classes */
+.nb-float { animation: nb-float 3s ease-in-out infinite; }
+.nb-wiggle { animation: nb-wiggle 2s ease-in-out infinite; }
+.nb-fade-in { animation: nb-fade-in-up 0.5s ease-out both; }
+.nb-slide-in { animation: nb-slide-in-right 0.4s ease-out both; }
+.nb-pop-in { animation: nb-pop-in 0.4s ease-out both; }
+
+/* Staggered entrance delays */
+.nb-delay-1 { animation-delay: 0.1s; }
+.nb-delay-2 { animation-delay: 0.2s; }
+.nb-delay-3 { animation-delay: 0.3s; }
+.nb-delay-4 { animation-delay: 0.4s; }
+.nb-delay-5 { animation-delay: 0.5s; }
+
+/* Card hover lift effect */
+.nb-card-hover {
+  transition: all 0.2s ease-in-out;
+}
+.nb-card-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0px 0px #000000;
+}
+.nb-card-hover:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+/* Progress bar striped animation */
+.nb-progress-striped {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255,255,255,0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255,255,255,0.15) 50%,
+    rgba(255,255,255,0.15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 40px 40px;
+  animation: nb-progress-stripe 1s linear infinite;
+}
+
+/* Decorative dot pattern overlay */
+.nb-dots-pattern {
+  background-image: radial-gradient(circle, #00000010 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Decorative diagonal stripes */
+.nb-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 5px,
+    rgba(0,0,0,0.03) 5px,
+    rgba(0,0,0,0.03) 10px
+  );
+}
+
+/* Gradient text effect */
+.nb-gradient-text {
+  background: linear-gradient(135deg, #1A1A2E 0%, #FF6B9D 50%, #00D9FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effect for active nav items */
+.nb-glow {
+  animation: nb-pulse-glow 2s ease-in-out infinite;
+}
+
+/* Shimmer loading effect */
+.nb-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: nb-shimmer 1.5s infinite;
+}

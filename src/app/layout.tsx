@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${spaceGrotesk.variable} h-full`}>
+    <html lang="id" className={`${spaceGrotesk.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full font-sans antialiased">
         <ClerkProvider>
           <Providers>{children}</Providers>

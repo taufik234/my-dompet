@@ -6,7 +6,7 @@ import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Select } from "./ui/Select";
 import { formatRupiah, formatDateShort } from "@/lib/utils";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Receipt, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { useState } from "react";
 
 // Tipe data transaksi dari Convex
@@ -50,6 +50,7 @@ const MONTHS = [
 
 /**
  * Tabel riwayat transaksi dengan filter bulan, tipe, dompet, serta aksi edit/hapus.
+ * Dengan animasi baris dan visual indicator untuk tipe transaksi.
  */
 export function TransactionTable({ onEdit }: TransactionTableProps) {
   const allTransactions = useQuery(api.transactions.list, {}) as Transaction[] | undefined;
@@ -92,7 +93,7 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Filter Bar */}
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="nb-card flex flex-wrap items-end gap-3 bg-white p-3">
         <Select
           label="Bulan"
           value={filterMonth}
@@ -128,11 +129,14 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
 
       {/* Tabel Transaksi */}
       {!transactions ? (
-        <div className="nb-card flex items-center justify-center p-12">
+        <div className="nb-card nb-shimmer flex items-center justify-center p-12">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent" />
         </div>
       ) : transactions.length === 0 ? (
         <div className="nb-card flex flex-col items-center justify-center p-12 text-center">
+          <div className="nb-float mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-black bg-nb-yellow">
+            <Receipt className="h-10 w-10 opacity-60" />
+          </div>
           <p className="text-lg font-bold">Belum ada transaksi</p>
           <p className="text-sm opacity-60">
             Tambahkan transaksi pertamamu!
@@ -144,7 +148,7 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
           <div className="hidden overflow-x-auto md:block">
             <table className="w-full">
               <thead>
-                <tr className="border-b-3 border-black bg-nb-gray">
+                <tr className="border-b-3 border-black bg-nb-dark text-white">
                   <th className="px-4 py-3 text-left text-sm font-extrabold">Tanggal</th>
                   <th className="px-4 py-3 text-left text-sm font-extrabold">Keterangan</th>
                   <th className="px-4 py-3 text-left text-sm font-extrabold">Kategori</th>
@@ -155,15 +159,25 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((t) => (
+                {transactions.map((t, idx) => (
                   <tr
                     key={t._id}
-                    className="border-b-2 border-black/10 last:border-b-0 hover:bg-nb-gray/50"
+                    className="group border-b-2 border-black/10 last:border-b-0 hover:bg-nb-gray/50 transition-colors duration-150"
+                    style={{ animationDelay: `${Math.min(idx * 0.03, 0.5)}s` }}
                   >
                     <td className="px-4 py-3 text-sm font-medium">
                       {formatDateShort(t.date)}
                     </td>
-                    <td className="px-4 py-3 text-sm">{t.description}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        {t.type === "income" ? (
+                          <ArrowUpCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                        ) : (
+                          <ArrowDownCircle className="h-4 w-4 text-nb-pink flex-shrink-0" />
+                        )}
+                        <span className="text-sm font-medium">{t.description}</span>
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <Badge>{t.category}</Badge>
                     </td>
@@ -182,11 +196,13 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
                         {t.type === "income" ? "Masuk" : "Keluar"}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-right text-sm font-bold">
-                      {formatRupiah(t.amount)}
+                    <td className={`px-4 py-3 text-right text-sm font-bold ${
+                      t.type === "income" ? "text-green-700" : "text-nb-pink"
+                    }`}>
+                      {t.type === "income" ? "+" : "-"}{formatRupiah(t.amount)}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center justify-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() =>
                             onEdit?.({
@@ -221,13 +237,23 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
 
           {/* Mobile Card List */}
           <div className="flex flex-col md:hidden">
-            {transactions.map((t) => (
+            {transactions.map((t, idx) => (
               <div
                 key={t._id}
-                className="flex items-center justify-between border-b-2 border-black/10 p-4 last:border-b-0"
+                className={`relative flex items-center justify-between border-b-2 border-black/10 p-4 last:border-b-0 transition-all duration-150 hover:bg-nb-gray/30 ${
+                  t.type === "income" ? "border-l-4 border-l-nb-green" : "border-l-4 border-l-nb-pink"
+                }`}
+                style={{ animationDelay: `${Math.min(idx * 0.03, 0.5)}s` }}
               >
-                <div className="flex flex-col gap-1">
-                  <p className="font-bold">{t.description}</p>
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center gap-2">
+                    {t.type === "income" ? (
+                      <ArrowUpCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <ArrowDownCircle className="h-4 w-4 text-nb-pink flex-shrink-0" />
+                    )}
+                    <p className="font-bold">{t.description}</p>
+                  </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={t.type}>
                       {t.type === "income" ? "Masuk" : "Keluar"}
@@ -242,7 +268,9 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
                   <p className="text-xs opacity-60">{formatDateShort(t.date)}</p>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <p className="font-extrabold">{formatRupiah(t.amount)}</p>
+                  <p className={`font-extrabold ${t.type === "income" ? "text-green-700" : "text-nb-pink"}`}>
+                    {t.type === "income" ? "+" : "-"}{formatRupiah(t.amount)}
+                  </p>
                   <div className="flex gap-1">
                     <button
                       onClick={() =>

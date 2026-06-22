@@ -12,6 +12,18 @@ export default defineSchema({
   })
     .index("by_userId", ["userId"]),
 
+  // Tabel tujuan bulanan (monthly goals)
+  goals: defineTable({
+    userId: v.string(), // ID user dari Clerk
+    month: v.number(), // Bulan (0-11)
+    year: v.number(), // Tahun
+    incomeTarget: v.number(), // Target pemasukan bulan ini
+    expenseLimit: v.number(), // Batas pengeluaran bulan ini
+    savingsTarget: v.number(), // Target menabung bulan ini
+    updatedAt: v.number(),
+  })
+    .index("by_userId_and_month", ["userId", "month", "year"]),
+
   // Tabel utama untuk menyimpan semua transaksi keuangan
   transactions: defineTable({
     userId: v.string(), // ID user dari Clerk
