@@ -5,18 +5,31 @@ import { v } from "convex/values";
 
 /**
  * Mengambil semua transaksi milik user yang sedang login,
- * diurutkan berdasarkan tanggal terbaru.
+ * dengan filter opsional berdasarkan walletId.
+ * Diurutkan berdasarkan tanggal terbaru.
  */
 export const list = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    walletId: v.optional(v.id("wallets")),
+  },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthorized");
 
-    const transactions = await ctx.db
-      .query("transactions")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
-      .collect();
+    let transactions;
+    if (args.walletId) {
+      // Filter berdasarkan dompet tertentu
+      transactions = await ctx.db
+        .query("transactions")
+        .withIndex("by_walletId", (q) => q.eq("walletId", args.walletId!))
+        .collect();
+    } else {
+      // Semua transaksi user
+      transactions = await ctx.db
+        .query("transactions")
+        .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+        .collect();
+    }
 
     // Urutkan berdasarkan tanggal terbaru
     return transactions.sort((a, b) => b.date - a.date);
@@ -198,6 +211,7 @@ export const getMonthlyComparison = query({
  */
 export const create = mutation({
   args: {
+    walletId: v.optional(v.id("wallets")),
     amount: v.number(),
     type: v.union(v.literal("income"), v.literal("expense")),
     category: v.string(),
@@ -210,6 +224,7 @@ export const create = mutation({
 
     return await ctx.db.insert("transactions", {
       userId: identity.subject,
+      walletId: args.walletId,
       amount: args.amount,
       type: args.type,
       category: args.category,
@@ -226,6 +241,7 @@ export const create = mutation({
 export const update = mutation({
   args: {
     id: v.id("transactions"),
+    walletId: v.optional(v.id("wallets")),
     amount: v.number(),
     type: v.union(v.literal("income"), v.literal("expense")),
     category: v.string(),
@@ -244,6 +260,7 @@ export const update = mutation({
 
     const { id, ...data } = args;
     await ctx.db.patch(id, {
+      walletId: data.walletId,
       amount: data.amount,
       type: data.type,
       category: data.category,

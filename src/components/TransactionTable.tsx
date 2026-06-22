@@ -13,6 +13,7 @@ import { useState } from "react";
 type Transaction = {
   _id: string;
   userId: string;
+  walletId?: string;
   amount: number;
   type: "income" | "expense";
   category: string;
@@ -21,9 +22,19 @@ type Transaction = {
   createdAt: number;
 };
 
+// Tipe wallet
+type WalletData = {
+  _id: string;
+  name: string;
+  icon: string;
+  color: string;
+  balance: number;
+};
+
 interface TransactionTableProps {
   onEdit?: (transaction: {
     id: string;
+    walletId?: string;
     amount: number;
     type: "income" | "expense";
     category: string;
@@ -38,24 +49,30 @@ const MONTHS = [
 ];
 
 /**
- * Tabel riwayat transaksi dengan filter bulan dan tipe, serta aksi edit/hapus.
+ * Tabel riwayat transaksi dengan filter bulan, tipe, dompet, serta aksi edit/hapus.
  */
 export function TransactionTable({ onEdit }: TransactionTableProps) {
-  const allTransactions = useQuery(api.transactions.list) as Transaction[] | undefined;
+  const allTransactions = useQuery(api.transactions.list, {}) as Transaction[] | undefined;
   const removeTransaction = useMutation(api.transactions.remove);
+  const wallets = useQuery(api.wallets.list) as WalletData[] | undefined;
 
   const now = new Date();
   const [filterMonth, setFilterMonth] = useState(now.getMonth().toString());
   const [filterYear, setFilterYear] = useState(now.getFullYear().toString());
   const [filterType, setFilterType] = useState<"all" | "income" | "expense">("all");
+  const [filterWallet, setFilterWallet] = useState("all");
 
-  // Filter transaksi berdasarkan bulan, tahun, dan tipe
+  // Buat map walletId -> wallet info
+  const walletMap = new Map(wallets?.map((w) => [w._id, w]) ?? []);
+
+  // Filter transaksi berdasarkan bulan, tahun, tipe, dan dompet
   const transactions = allTransactions?.filter((t) => {
     const d = new Date(t.date);
     const matchMonth = d.getMonth() === parseInt(filterMonth);
     const matchYear = d.getFullYear() === parseInt(filterYear);
     const matchType = filterType === "all" || t.type === filterType;
-    return matchMonth && matchYear && matchType;
+    const matchWallet = filterWallet === "all" || t.walletId === filterWallet;
+    return matchMonth && matchYear && matchType && matchWallet;
   });
 
   const handleDelete = async (id: string) => {
@@ -98,6 +115,15 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
             { value: "expense", label: "Pengeluaran" },
           ]}
         />
+        <Select
+          label="Dompet"
+          value={filterWallet}
+          onChange={(e) => setFilterWallet(e.target.value)}
+          options={[
+            { value: "all", label: "Semua Dompet" },
+            ...(wallets?.map((w) => ({ value: w._id, label: `${w.icon} ${w.name}` })) ?? []),
+          ]}
+        />
       </div>
 
       {/* Tabel Transaksi */}
@@ -122,6 +148,7 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
                   <th className="px-4 py-3 text-left text-sm font-extrabold">Tanggal</th>
                   <th className="px-4 py-3 text-left text-sm font-extrabold">Keterangan</th>
                   <th className="px-4 py-3 text-left text-sm font-extrabold">Kategori</th>
+                  <th className="px-4 py-3 text-left text-sm font-extrabold">Dompet</th>
                   <th className="px-4 py-3 text-left text-sm font-extrabold">Tipe</th>
                   <th className="px-4 py-3 text-right text-sm font-extrabold">Nominal</th>
                   <th className="px-4 py-3 text-center text-sm font-extrabold">Aksi</th>
@@ -140,6 +167,16 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
                     <td className="px-4 py-3">
                       <Badge>{t.category}</Badge>
                     </td>
+                    <td className="px-4 py-3 text-sm">
+                      {t.walletId && walletMap.get(t.walletId) ? (
+                        <span className="inline-flex items-center gap-1">
+                          <span>{walletMap.get(t.walletId)!.icon}</span>
+                          <span className="font-medium">{walletMap.get(t.walletId)!.name}</span>
+                        </span>
+                      ) : (
+                        <span className="opacity-40">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <Badge variant={t.type}>
                         {t.type === "income" ? "Masuk" : "Keluar"}
@@ -154,6 +191,7 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
                           onClick={() =>
                             onEdit?.({
                               id: t._id,
+                              walletId: t.walletId,
                               amount: t.amount,
                               type: t.type,
                               category: t.category,
@@ -190,11 +228,16 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
               >
                 <div className="flex flex-col gap-1">
                   <p className="font-bold">{t.description}</p>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={t.type}>
                       {t.type === "income" ? "Masuk" : "Keluar"}
                     </Badge>
                     <Badge>{t.category}</Badge>
+                    {t.walletId && walletMap.get(t.walletId) && (
+                      <span className="text-xs font-medium">
+                        {walletMap.get(t.walletId)!.icon} {walletMap.get(t.walletId)!.name}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs opacity-60">{formatDateShort(t.date)}</p>
                 </div>
@@ -205,6 +248,7 @@ export function TransactionTable({ onEdit }: TransactionTableProps) {
                       onClick={() =>
                         onEdit?.({
                           id: t._id,
+                          walletId: t.walletId,
                           amount: t.amount,
                           type: t.type,
                           category: t.category,

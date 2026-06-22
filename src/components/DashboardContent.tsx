@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SummaryCards } from "@/components/SummaryCards";
 import { TransactionForm } from "@/components/TransactionForm";
 import { TransactionTable } from "@/components/TransactionTable";
+import { WalletManager } from "@/components/WalletManager";
 import { ExpenseChart } from "@/components/ExpenseChart";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -11,12 +12,13 @@ import { Plus } from "lucide-react";
 
 /**
  * Konten Dashboard utama.
- * Menampilkan ringkasan keuangan, form tambah transaksi, chart, dan riwayat.
+ * Menampilkan ringkasan keuangan, dompet, form tambah transaksi, chart, dan riwayat.
  */
 export function DashboardContent() {
   const [showForm, setShowForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<{
     id: string;
+    walletId?: string;
     amount: number;
     type: "income" | "expense";
     category: string;
@@ -61,6 +63,9 @@ export function DashboardContent() {
 
       {/* Summary Cards */}
       <SummaryCards />
+
+      {/* Wallet Manager */}
+      <WalletManager />
 
       {/* Form Modal / Inline */}
       {showForm && (

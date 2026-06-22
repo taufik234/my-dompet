@@ -7,11 +7,11 @@ import { formatRupiah } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 
 /**
- * Kartu ringkasan keuangan: Total Saldo, Pemasukan Bulan Ini, Pengeluaran Bulan Ini.
+ * Kartu ringkasan keuangan: Total Saldo (seluruh dompet), Pemasukan Bulan Ini, Pengeluaran Bulan Ini.
  * Data otomatis update real-time dari Convex.
  */
 export function SummaryCards() {
-  const summary = useQuery(api.transactions.getSummary) as
+  const summary = useQuery(api.wallets.getGrandTotal) as
     | {
         totalBalance: number;
         monthlyIncome: number;
@@ -43,7 +43,7 @@ export function SummaryCards() {
             <Wallet className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-sm font-bold opacity-70">Total Saldo</p>
+            <p className="text-sm font-bold opacity-70">Total Seluruh Dompet</p>
             <p className="text-2xl font-extrabold">
               {formatRupiah(summary.totalBalance)}
             </p>

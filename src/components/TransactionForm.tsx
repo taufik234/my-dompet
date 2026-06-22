@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
@@ -9,10 +9,18 @@ import { Select } from "./ui/Select";
 import { CATEGORIES } from "../../convex/categories";
 import { Plus, X } from "lucide-react";
 
+// Tipe wallet dari Convex
+type WalletData = {
+  _id: string;
+  name: string;
+  icon: string;
+};
+
 interface TransactionFormProps {
   onSuccess?: () => void;
   editData?: {
     id: string;
+    walletId?: string;
     amount: number;
     type: "income" | "expense";
     category: string;
@@ -25,6 +33,7 @@ interface TransactionFormProps {
 /**
  * Form untuk menambah atau mengedit transaksi.
  * Menggunakan Convex mutation untuk menyimpan data secara real-time.
+ * Mendukung pemilihan dompet.
  */
 export function TransactionForm({
   onSuccess,
@@ -33,7 +42,9 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const createTransaction = useMutation(api.transactions.create);
   const updateTransaction = useMutation(api.transactions.update);
+  const wallets = useQuery(api.wallets.list) as (WalletData & { balance: number })[] | undefined;
 
+  const [selectedWalletId, setSelectedWalletId] = useState(editData?.walletId ?? "");
   const [amount, setAmount] = useState(editData?.amount?.toString() ?? "");
   const [type, setType] = useState<"income" | "expense">(
     editData?.type ?? "expense"
@@ -52,12 +63,21 @@ export function TransactionForm({
     label: c.name,
   }));
 
+  const walletOptions = [
+    { value: "", label: "— Tanpa Dompet —" },
+    ...(wallets?.map((w) => ({
+      value: w._id,
+      label: `${w.icon} ${w.name}`,
+    })) ?? []),
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       const data = {
+        walletId: selectedWalletId ? (selectedWalletId as never) : undefined,
         amount: parseFloat(amount),
         type,
         category,
@@ -123,6 +143,13 @@ export function TransactionForm({
       </div>
 
       {/* Form Fields */}
+      <Select
+        label="Dompet"
+        value={selectedWalletId}
+        onChange={(e) => setSelectedWalletId(e.target.value)}
+        options={walletOptions}
+      />
+
       <Input
         label="Nominal (Rp)"
         type="number"
